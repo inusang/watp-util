@@ -4,6 +4,10 @@ plugins {
     id 'java'
 }
 
+jar {
+    archiveFileName = "watp-util-0.1.jar"
+}
+
 group = 'org.watp.util'
 version = '0.1'
 sourceCompatibility = '16'

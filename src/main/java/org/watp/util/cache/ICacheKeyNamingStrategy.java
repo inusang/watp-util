@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface ICacheKeyNamingStrategy {
 
-    String DEFAULT_PUBLIC_TEMPLATE = "PUBLIC-DESC-${}-[=]";
-    String DEFAULT_PRIVATE_TEMPLATE = "PRIVATE-DESC-${}-[=]-ID-${}";
+    String DEFAULT_PUBLIC_TEMPLATE = "PUBLIC-${}-[=]";
+    String DEFAULT_PRIVATE_TEMPLATE = "PRIVATE-${}-[=]-${}";
 
     default String assemble() {
         String template = this.assembleTemplate();

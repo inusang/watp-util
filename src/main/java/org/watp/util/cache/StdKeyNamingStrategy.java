@@ -54,9 +54,9 @@ public class StdKeyNamingStrategy extends AbstractStdCacheNaming implements ICac
     @Override
     public String assembleTemplate() {
         if (cacheType == CacheType.PUBLIC) {
-            return DEFAULT_PUBLIC_TEMPLATE.replace("[=]", "DATATYPE-${}");
+            return DEFAULT_PUBLIC_TEMPLATE.replace("[=]", "sync${}");
         } else if (cacheType == CacheType.PRIVATE) {
-            return DEFAULT_PRIVATE_TEMPLATE.replace("[=]", "DATATYPE-${}");
+            return DEFAULT_PRIVATE_TEMPLATE.replace("[=]", "${}");
         } else {
             throw new IllegalArgumentException("can not resolve cache type");
         }
