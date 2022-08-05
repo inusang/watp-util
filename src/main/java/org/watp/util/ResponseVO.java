@@ -8,10 +8,10 @@ public class ResponseVO<T> {
     public enum GeneralResponse {
         SUCCESS("200", "success"),
 
-        INVALID_BUSINESS("500", "invalid business"),
-        DEALING_BUSINESS("500", "dealing business"),
-        INVALID_CHAR("500", "invalid char"),
-        SYS_ERROR("500", "system error");
+        INVALID_BUSINESS("500", "Business invalid"),
+        DEALING_BUSINESS("500", "Business dealing"),
+        INVALID_CHAR("500", "Invalid char"),
+        SYS_ERROR("500", "System error");
 
         private final String code;
         private final String msg;
