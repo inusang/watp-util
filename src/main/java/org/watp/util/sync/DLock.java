@@ -1,6 +1,6 @@
 package org.watp.util.sync;
 
-import org.watp.util.cache.CacheEnable;
+import org.watp.util.cache.annotaions.CacheEnable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

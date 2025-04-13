@@ -1,4 +1,8 @@
-package org.watp.util.cache;
+package org.watp.util.cache.annotaions;
+
+import org.watp.util.cache.*;
+import org.watp.util.cache.enums.CacheScopeType;
+import org.watp.util.cache.enums.CacheType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,15 +13,15 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface CacheEnable {
-    Class<? extends ICacheKeyNamingStrategy> keyGen() default StdKeyNamingStrategy.class;
-
-    CacheType type() default CacheType.PUBLIC;
+    Class<? extends ICacheGenKeyService> keyGen() default DefaultCacheGenKeyService.class;
 
     String desc();
 
-    DataType dataType();
+    CacheType cacheType() default CacheType.DATA;
 
-    String privateId() default "";
+    CacheScopeType cacheScope();
+
+    KeyAttributes[] keyAttributes();
 
     long expiration() default -1;
 

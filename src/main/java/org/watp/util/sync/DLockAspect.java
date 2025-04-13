@@ -8,7 +8,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.watp.util.ResponseVO;
-import org.watp.util.cache.CacheEnable;
+import org.watp.util.cache.annotaions.CacheEnable;
 import org.watp.util.cache.IKeyGenerateAbility;
 
 import java.lang.reflect.Method;
@@ -25,7 +25,6 @@ public class DLockAspect implements IKeyGenerateAbility {
 
     @Pointcut("@annotation(org.watp.util.sync.DLock)")
     public void dLockMethod() {
-
     }
 
     @Around("dLockMethod()")
@@ -33,17 +32,17 @@ public class DLockAspect implements IKeyGenerateAbility {
         Method method = ((MethodSignature) jp.getSignature()).getMethod();
         DLock dLock = ((MethodSignature) jp.getSignature()).getMethod().getAnnotation(DLock.class);
         CacheEnable cacheEnable = dLock.cacheEnable();
-        String key = keyGenerate(cacheEnable, method.getParameters(), jp.getArgs(), cacheEnable.privateId());
-        LockStrategy lockStrategy = dLock.lockStrategy();
-        String result;
-        result = lockStrategy.syncFlow(lock, key, dLock, () -> {
-            try {
-                return (String) jp.proceed();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                return ResponseVO.GeneralResponse.SYS_ERROR.getResponse().toJson();
-            }
-        });
+//        String key = keyGenerate(cacheEnable, method.getParameters(), jp.getArgs(), cacheEnable.privateId());
+//        LockStrategy lockStrategy = dLock.lockStrategy();
+        String result = null;
+//        result = lockStrategy.syncFlow(lock, key, dLock, () -> {
+//            try {
+//                return (String) jp.proceed();
+//            } catch (Throwable e) {
+//                e.printStackTrace();
+//                return ResponseVO.GeneralResponse.SYS_ERROR.getResponse().toJson();
+//            }
+//        });
         return result;
     }
 }

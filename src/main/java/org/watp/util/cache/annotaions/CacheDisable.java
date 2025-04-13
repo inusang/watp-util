@@ -1,4 +1,4 @@
-package org.watp.util.cache;
+package org.watp.util.cache.annotaions;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,5 +14,5 @@ public @interface CacheDisable {
 
     String mappingElementTypes();
 
-    String privateId() default "";
+    KeyAttributes[] keyAttributes();
 }

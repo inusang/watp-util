@@ -2,9 +2,10 @@ package org.watp.util;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.watp.util.cache.CacheEnable;
-import org.watp.util.cache.CacheType;
-import org.watp.util.cache.DataType;
+import org.watp.util.cache.annotaions.CacheEnable;
+import org.watp.util.cache.enums.CacheScopeType;
+import org.watp.util.cache.enums.CacheType;
+import org.watp.util.cache.annotaions.KeyAttributes;
 
 @SpringBootTest(classes = {WatpUtilTest.class})
 public class WatpUtilTest {
@@ -13,10 +14,14 @@ public class WatpUtilTest {
     public void testCacheEnable() {
         Person person = new Person();
         person.setId("10000");
-        getPerson(person);
+        System.out.println(getPerson(person));
     }
 
-    @CacheEnable(type = CacheType.PRIVATE, desc = "test", dataType = DataType.DATA, privateId = "${metaPerson.id}")
+    @CacheEnable(desc = "TestData", cacheType = CacheType.DATA, cacheScope = CacheScopeType.SCOPED,
+            keyAttributes = {
+                    @KeyAttributes(name = "id", value = "${metaPerson.id}"),
+                    @KeyAttributes(name = "name", value = "${metaPerson.name}")
+    })
     Person getPerson(Person metaPerson) {
         return new Person(metaPerson.id, "man", 100);
     }

@@ -8,12 +8,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.watp.util.cache.annotaions.CacheDisable;
 
 import java.lang.reflect.Method;
 
 @Aspect
 @Component
-public class CacheDisableAspect implements IKeyGenerateAbility {
+public class CacheDisableAspect {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -22,7 +23,7 @@ public class CacheDisableAspect implements IKeyGenerateAbility {
         this.redisTemplate = redisTemplate;
     }
 
-    @Pointcut("@annotation(org.watp.util.cache.CacheDisable)")
+    @Pointcut("@annotation(org.watp.util.cache.annotaions.CacheDisable)")
     public void queryMethod() {
 
     }
@@ -61,7 +62,7 @@ public class CacheDisableAspect implements IKeyGenerateAbility {
             return null;
         }
 
-        String key = keyGenerate(cacheEnableMethod, method.getParameters(), jp.getArgs(), cacheDisable.privateId());
+        //String key = keyGenerate(cacheEnableMethod, method.getParameters(), jp.getArgs(), cacheDisable.privateId());
 
         try {
             jp.proceed();
@@ -70,7 +71,7 @@ public class CacheDisableAspect implements IKeyGenerateAbility {
             return null;
         }
 
-        redisTemplate.delete(key);
+        //redisTemplate.delete(key);
 
         return null;
     }

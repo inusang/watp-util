@@ -1,7 +1,7 @@
 package org.watp.util.sync;
 
 import org.watp.util.ResponseVO;
-import org.watp.util.cache.CacheEnable;
+import org.watp.util.cache.annotaions.CacheEnable;
 
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;

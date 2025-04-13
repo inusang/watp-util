@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.6'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.4.4'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
 }
 
@@ -10,7 +10,10 @@ jar {
 
 group = 'org.watp.util'
 version = '0.1'
-sourceCompatibility = '16'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
 
 repositories {
     mavenCentral()
@@ -22,11 +25,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.google.guava:guava:33.1.0-jre'
-    implementation 'it.unimi.dsi:fastutil:8.5.13'
+    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation 'com.google.guava:guava:33.4.7-jre'
+    implementation 'it.unimi.dsi:fastutil:8.5.15'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('bootJar') {
+    enabled = false
 }
