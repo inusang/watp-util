@@ -13,9 +13,9 @@ public class DefaultCacheGenKeyService implements ICacheGenKeyService {
     @Override
     public String keyGen(CacheKeyMetadata metadata, Map<String,Object> nameToArg) {
         StringBuilder key = new StringBuilder();
-        key.append(metadata.getDesc())
-                .append(":").append(metadata.getCacheType().getName())
-                .append(":").append(metadata.getCacheScope().getName());
+        key.append(metadata.getCacheType().getName())
+                .append(":").append(metadata.getCacheScope().getName())
+                .append(":").append(metadata.getDesc());
 
         Map<String,String> keyAttributes = metadata.getKeyAttributes();
         for (Map.Entry<String,String> entry : keyAttributes.entrySet()) {
@@ -40,7 +40,6 @@ public class DefaultCacheGenKeyService implements ICacheGenKeyService {
                 if (fieldPathSegments.isEmpty()) {
                     throw new RuntimeException("Invalid expression: field path is empty or malformed in placeholder '" + exp + "'");
                 }
-                String lastField = fieldPathSegments.getLast();
                 Object current = nameToArg.get(fieldPathSegments.getFirst());
 
                 try {
