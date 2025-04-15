@@ -1,67 +1,36 @@
 package org.watp.util;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.watp.util.cache.annotaions.CacheEnable;
-import org.watp.util.cache.enums.CacheScopeType;
-import org.watp.util.cache.enums.CacheType;
-import org.watp.util.cache.annotaions.KeyAttributes;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
+import org.watp.util.entity.Person;
+import org.watp.util.entity.PersonStay;
 
-@SpringBootTest(classes = {WatpUtilTest.class})
+@SpringBootTest
+@ActiveProfiles("test")
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan
 public class WatpUtilTest {
+    @Autowired
+    private PersonService testService;
 
     @Test
     public void testCacheEnable() {
-        Person person = new Person();
-        person.setId("10000");
-        System.out.println(getPerson(person));
+        Person person = new Person("01", "ren", 18);
+        PersonStay personStay = new PersonStay("01", "tokyo", "plat");
+        testService.getPerson(person);
+        testService.getPersonStay(personStay);
     }
 
-    @CacheEnable(desc = "TestData", cacheType = CacheType.DATA, cacheScope = CacheScopeType.SCOPED,
-            keyAttributes = {
-                    @KeyAttributes(name = "id", value = "${metaPerson.id}"),
-                    @KeyAttributes(name = "name", value = "${metaPerson.name}")
-    })
-    Person getPerson(Person metaPerson) {
-        return new Person(metaPerson.id, "man", 100);
+    @Test
+    public void testCacheDisable() {
+        Person person = new Person("01", "ren", 18);
+        testService.delPerson(person);
     }
 
-    static class Person {
-        private String id;
-        private String name;
-        private int age;
-
-        public Person() {
-        }
-
-        public Person(String id, String name, int age) {
-            this.id = id;
-            this.name = name;
-            this.age = age;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public void setAge(int age) {
-            this.age = age;
-        }
-    }
 }

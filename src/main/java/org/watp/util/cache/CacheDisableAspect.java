@@ -1,21 +1,29 @@
 package org.watp.util.cache;
 
+import com.google.common.collect.Lists;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.watp.util.cache.annotaions.CacheDisable;
+import org.watp.util.cache.annotaions.CacheDisableGroup;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Aspect
 @Component
 public class CacheDisableAspect {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
@@ -23,57 +31,51 @@ public class CacheDisableAspect {
         this.redisTemplate = redisTemplate;
     }
 
-    @Pointcut("@annotation(org.watp.util.cache.annotaions.CacheDisable)")
+    @Pointcut("@annotation(org.watp.util.cache.annotaions.CacheDisable) || @annotation(org.watp.util.cache.annotaions.CacheDisableGroup)")
     public void queryMethod() {
-
     }
 
     @Around("queryMethod()")
     public Object aroundQuery(ProceedingJoinPoint jp) {
-        if (redisTemplate == null) {
-            throw new NullPointerException("reactiveRedisTemplate is null in @CacheDisableAspect");
+        Object result;
+        try {
+            result = jp.proceed();
+        } catch (Throwable e) {
+            logger.error("Exception in {}.{} with args: {}",
+                    jp.getSignature().getDeclaringTypeName(),
+                    jp.getSignature().getName(),
+                    Arrays.toString(jp.getArgs()), e);
+            return null;
         }
+
         Method method = ((MethodSignature) jp.getSignature()).getMethod();
-        if (!method.getReturnType().getName().equals("void")) {
-            throw new IllegalArgumentException("@CacheDisable should be signed on a method without return type");
+        List<CacheDisable> disables = Lists.newArrayList();
+        if (method.isAnnotationPresent(CacheDisable.class)) {
+            disables.add(method.getAnnotation(CacheDisable.class));
+        }
+        if (method.isAnnotationPresent(CacheDisableGroup.class)) {
+            CacheDisableGroup disableGroup = method.getAnnotation(CacheDisableGroup.class);
+            disables.addAll(Lists.newArrayList(disableGroup.items()));
         }
 
-        CacheDisable cacheDisable = ((MethodSignature) jp.getSignature()).getMethod().getAnnotation(CacheDisable.class);
+        Map<String, Object> nameToArg = CacheKeyHelper.solveToNameToArgMap(jp);
 
-        String cacheEnableElementTypes = cacheDisable.mappingElementTypes();
-        cacheEnableElementTypes = cacheEnableElementTypes.replace("{", "").replace("}", "");
-        String[] elementTypeStrArray = cacheEnableElementTypes.split(",");
-        
-        Class<?>[] elementTypeArray = new Class<?>[elementTypeStrArray.length];
-        for (int i = 0; i < elementTypeStrArray.length; i++) {
+        List<String> keys = Lists.newArrayList();
+        for (CacheDisable cacheDisable : disables) {
             try {
-                elementTypeArray[i] = Class.forName(elementTypeStrArray[i]);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                return null;
+                CacheKeyHelper.CacheKeyContext context = CacheKeyHelper.buildContext(cacheDisable);
+                keys.add(context.genKeyService.keyGen(context.metadata, nameToArg));
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+                logger.error("Exception in {}.{} with args: {}",
+                        jp.getSignature().getDeclaringTypeName(),
+                        jp.getSignature().getName(),
+                        Arrays.toString(jp.getArgs()), e);
             }
         }
 
-        Method cacheEnableMethod;
-        try {
-            cacheEnableMethod = cacheDisable.mappingClass().getMethod(cacheDisable.mappingMethod(), elementTypeArray);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        redisTemplate.delete(keys);
 
-        //String key = keyGenerate(cacheEnableMethod, method.getParameters(), jp.getArgs(), cacheDisable.privateId());
-
-        try {
-            jp.proceed();
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        //redisTemplate.delete(key);
-
-        return null;
+        return result;
     }
 
 }
