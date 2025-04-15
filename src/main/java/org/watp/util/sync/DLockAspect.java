@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.watp.util.ResponseVO;
 import org.watp.util.cache.annotaions.CacheEnable;
-import org.watp.util.cache.IKeyGenerateAbility;
 
 import java.lang.reflect.Method;
 
 @Aspect
 @Component
-public class DLockAspect implements IKeyGenerateAbility {
+public class DLockAspect {
     private final DistributeLock lock;
 
     @Autowired
