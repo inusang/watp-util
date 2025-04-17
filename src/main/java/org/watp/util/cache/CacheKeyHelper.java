@@ -12,6 +12,7 @@ import org.watp.util.cache.enums.CacheType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,7 +61,10 @@ class CacheKeyHelper {
                 .cacheScope(cacheScope)
                 .cacheType(cacheType)
                 .keyAttributes(Arrays.stream(keyAttributes)
-                        .collect(Collectors.toMap(KeyAttributes::name, KeyAttributes::value)))
+                        .collect(Collectors.toMap(KeyAttributes::name,
+                                                  KeyAttributes::value,
+                                                  (k1, k2) -> k2,
+                                                  LinkedHashMap::new)))
                 .build();
         return new CacheKeyContext(genKeyService, metadata);
     }

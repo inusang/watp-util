@@ -15,6 +15,7 @@ public class PersonService {
     @CacheEnable(desc = "Person", cacheType = CacheType.DATA, cacheScope = CacheScopeType.SCOPED,
             keyAttributes = {
                     @KeyAttributes(name = "id", value = "${person.id}"),
+                    @KeyAttributes(name = "name", value = "${person.name}")
             })
     public Person getPerson(Person person) {
         return person;
